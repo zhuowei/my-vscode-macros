@@ -62,12 +62,18 @@ async function saveScrapMacroFunc() {
 
   const editLog = [];
   const usedPaths = new Set();
+  const dryRun = false;
 
   for (const documentUriAndPart of untitledDocsUris) {
     const document = documentUriAndPart[0];
     const newPath =
         await genNewPath(scrapDirUri, currentDateStr + '_', '.txt', usedPaths);
     usedPaths.add(newPath.toString());
+    if (dryRun) {
+      editLog.push(
+          'DRY ' + document.uri.toString() + ' -> ' + newPath.toString());
+      continue;
+    }
     await vscode.workspace.fs.writeFile(
         newPath, textEncoder.encode(document.getText()));
     editLog.push(document.uri.toString() + ' -> ' + newPath.toString());
